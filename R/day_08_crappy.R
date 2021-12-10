@@ -1,4 +1,5 @@
 library(tidyverse)
+library(Matrix)
 
 dd <- c("abcefg", "cf", "acdeg", "acdfg", "bcdf", "abdfg", "abdefg", "acf", "abcdefg", "abcdfg ")
 dd <- paste(dd, collapse = " ")
@@ -40,7 +41,7 @@ get_perms <- function(pp, mm, type = "cols") {
   col_indices
 }
 
-dd <- data.frame(x = readLines("dat"))
+dd <- data.frame(x = readLines("data/day_08"))
 a <- 1
 sapply(1:nrow(dd), function(a) {
   dd <- dd$x[a]
