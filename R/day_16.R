@@ -5,62 +5,38 @@ bin2dec <- function(x) {
   sum(x * 2 ^(l:0))
 }
 
-zero_mod <- function(m, n) {
-  a <- m %% n
-  ifelse(a == 0, n, a)
-}
-
 ddparse <- function(x, recursive_level, debug = FALSE) {
   if(debug) {
      browser()
   }
   recursive_level <- recursive_level + 1
-  #browser()
-  removed <- 0
-  length_x <- length(x)
   packet_version <- bin2dec(x[1:3])
   packet_type <- bin2dec(x[4:6])
   x <- x[-(1:6)]
-  removed <- removed + 6
+  
   if(packet_type == 4) {
     val <- integer(0)
     while(x[1] == 1) {
       val <- c(val, x[2:5])
       x <- x[-(1:5)]
-      removed <- removed + 5
     }
-    val <- c(val, x[2:5])
+    values <- bin2dec(c(val, x[2:5]))
     x <- x[-(1:5)]
-    removed <- removed + 5
-    #x <- x[-(1:(4 - zero_mod(removed, 4)))] #remove the garbage characters? it says to ignore, but not sure if that is ignore for now or throw away forever
-    rval <- list(packet_version = packet_version,
-         packet_type = packet_type,
-         length_type = NA,
-         values = bin2dec(val),
-         rl = recursive_level)
-    df <<- bind_rows(df, rval)
+    
+    df <<- bind_rows(df, data.frame(packet_version, packet_type, length_type = NA, values, recursive_level))
     return(x)
   }
+  
   if(packet_type != 4) {
     length_type <- x[1]
     x <- x[-1]
-    removed <- removed + 1
     if(length_type == 0) {
       total_length_of_subpackets <- bin2dec(x[1:15])
-      removed <- removed + 15
       x <- x[-(1:15)]
-      num_bits <- zero_mod(total_length_of_subpackets, 16)
-      df1 <- df
+
       short_x <- x[1:total_length_of_subpackets]
       x <- x[-(1:total_length_of_subpackets)]
-      rf <- list(
-        packet_version = packet_version,
-        packet_type = packet_type,
-        length_type = length_type,
-        values = NA,
-        rl = recursive_level
-      )
-      df <<- bind_rows(df, rf)
+      df <<- bind_rows(df, data.frame(packet_version, packet_type, length_type, values = NA, recursive_level))
       repeat {
         short_x <- ddparse(short_x, recursive_level = recursive_level, debug)
         if(length(short_x) == 0) {
@@ -70,19 +46,8 @@ ddparse <- function(x, recursive_level, debug = FALSE) {
     }
     if(length_type == 1) {
       number_subpackets <- bin2dec(x[1:11])
-      removed <- removed + 11
       x <- x[-(1:11)]
-      if(number_subpackets == 0) {
-        stop("zero subpackets not implemented")
-      }
-      rf <- list(
-        packet_version = packet_version,
-        packet_type = packet_type,
-        length_type = length_type,
-        values = NA,
-        rl = recursive_level
-      )
-      df <<- bind_rows(df, rf)
+      df <<- bind_rows(df, data.frame(packet_version, packet_type, length_type, values = NA, recursive_level))
       for(i in 1:number_subpackets) {
         x <- ddparse(x, recursive_level, debug)
       }
@@ -96,34 +61,32 @@ df <- data.frame(packet_version = numeric(0),
                  packet_type = numeric(0),
                  length_type = numeric(0),
                  values = numeric(0),
-                 rl = numeric(0))
+                 recursive_level = numeric(0))
 ddparse(as.integer(x), 0, debug = FALSE)
 sum(df$packet_version) #first star!
 
 repeat {
-  max_recursion <- max(df$rl)
-  eq <- which(df$rl == max_recursion - 1)
+  max_recursion <- max(df$recursive_level)
+  eq <- which(df$recursive_level == max_recursion - 1)
   j <- 1
   i <- 1
   ind <- as.list(eq)
   for(i in 1:length(eq)) {
-    while(df$rl[eq[i] + j] > max_recursion - 1 && eq[i] + j <= nrow(df)) {
+    while(df$recursive_level[eq[i] + j] > max_recursion - 1 && eq[i] + j <= nrow(df)) {
       ind[[i]] <- c(ind[[i]], df$values[ind[[i]][1] + j])
       j <- j + 1
-      df$rl[eq[i] + j]
-      ind
+      df$recursive_level[eq[i] + j]
     }
     j <- 1
   }
-  ind
+
   for(i in 1:length(ind)) {
     ind[[i]][1] <- df$packet_type[eq[i]]
     if(df$packet_type[eq[i]] == 4) {
       ind[[i]] <- c(ind[[i]], df$values[eq[i]])  
     }
   }
-  ind
-  df
+
   values <- sapply(ind, function(x) {
     case_when(
       x[1] == 0 ~ sum(x[-1]),
@@ -136,15 +99,11 @@ repeat {
       x[1] == 7 ~ as.numeric(x[2] == x[3])
     )
   })
-  values
-  df
-  ind
-  df[eq,]
   df$values[eq] <- values
-  df <- filter(df, rl < max_recursion)
+  df <- filter(df, recursive_level < max_recursion)
   if(nrow(df) == 1) {
     break
   }
 }
-
+ 
 df$values #second star!
