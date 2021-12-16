@@ -61,5 +61,3 @@ sapply(1:length(dd), function(j) {
   
 }) %>% 
   median(na.rm = T) #second_star!
-
-

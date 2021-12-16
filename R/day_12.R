@@ -1,6 +1,6 @@
 library(tidyverse)
 
-dd_perm <- data.frame(readLines("/Users/speegled/Documents_No_Icloud/R_projects/advent_of_code_2021/data/day_12") %>% 
+dd_perm <- data.frame(readLines("data/day_12") %>% 
   str_split_fixed(pattern = "-", n = 2))
 
 edges <- bind_rows(data.frame(dd_perm), 

@@ -13,17 +13,16 @@ end_char <- last(str)
 
 chars <- paste0(str[-20], lead(str)[-20])
 
-mat <- data.frame(matrix(0, nrow = 100, ncol = 100))
-names(mat) <-  dd$source
-rownames(mat) <- dd$source
+mat <- matrix(0, nrow = 100, ncol = 100, dimnames = list(row = dd$source, col = dd$source))
+
 for(i in 1:100) {
   mat[dd$val1[i], dd$source[i]] <- 1
-  mat[dd$val2[i], dd$source[i]] <- 1
+  mat[dd$val2[i], dd$source[i]] <- mat[dd$val2[i], dd$source[i]] + 1
 }
 
 start_vec <- table(factor(chars, levels = dd$source))
 
-final <- matrix.power(as.matrix(mat), 40) %*% start_vec #change to 10 for first star!
+final <- matrix.power(mat, 40) %*% start_vec #change to 10 for first star!
 data.frame(final) %>% 
   rownames_to_column() %>% 
   separate(rowname, into = c("c1", "c2"), sep = 1) %>% 

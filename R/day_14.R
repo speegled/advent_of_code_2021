@@ -1,7 +1,7 @@
 library(tidyverse)
 library(matrixcalc)
 dat <- readLines("data/day_14")
-dd <- data.frame(x = dat) %>% 
+data.frame(x = dat) %>% 
   filter(str_detect(x, "->")) %>% 
   separate(x, into = c("source", "insert"), sep = " -> ") %>% 
   mutate(val1 = paste0(str_extract(source, "^[A-Z]{1}"), insert),
