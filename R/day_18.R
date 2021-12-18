@@ -79,16 +79,14 @@ ss <- dat[1]
 for(i in 2:length(dat)){
   ss <- paste0("[", ss, ",", dat[i], "]")
   ss <- write_string(simplify(write_data_frame(ss)))
-}
+} #this is slow
 magnitude(ss) #first star!
-
-purrr::reduce(dat[-1], .f = add, .init = dat[1])
 
 add <- Vectorize(function(s1, s2) {
   ss <- paste0("[", s1, ",", s2, "]")
-  ss <- write_string(simplify(write_data_frame_compact(ss)))
+  ss <- write_string(simplify(write_data_frame(ss)))
   magnitude(ss)
 }, vectorize.args = c("s1", "s2"))
 
-sums <- outer(dat, dat, add)
+sums <- outer(dat, dat, add) #this is slower
 max(sums) #second star!
