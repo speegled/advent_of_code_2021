@@ -103,7 +103,7 @@ while(nrow(pairs) < max(pairs$scanner1)^2){
           distinct()
       }
     }
-    if(nrow(skeleton) > 38^2 - 0.5) {
+    if(nrow(skeleton) > N^2 - 0.5) {
       pairs <- bind_rows(pairs, skeleton) %>% 
         distinct()
       break
@@ -126,7 +126,7 @@ for(i in 1:nrow(dd)) {
 dd %>% 
   select(x1, y1, z1) %>% 
   distinct() %>% 
-  count()
+  count() #first star
 
 md <- 0
 for(i in 1:38) {
@@ -137,4 +137,4 @@ for(i in 1:38) {
     }
   }
 }
-md
+md #second star!
