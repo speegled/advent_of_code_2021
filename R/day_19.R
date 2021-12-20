@@ -6,7 +6,7 @@ dd <- dd %>%
   drop_na() %>% 
   mutate_all(as.integer)
 
-#hack to create SU(3), stored as a list in a. is there an R package that has specia groups?
+#hack to create determinant 1 transformations that map coordinate lines to coordinate lines
 perm <- matrix(c(0,0,1,1,0,0,0,1,0), nrow = 3)
 rot <- matrix(c(0, 1, 0, -1, 0, 0, 0, 0, 1), nrow = 3)
 rot2 <- matrix(c(1, 0, 0, 0, 0, 1, 0, -1, 0), nrow = 3)
