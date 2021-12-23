@@ -136,12 +136,12 @@ all_disjoint <- function(aa, new_cube) {
   TRUE
 }
 
+#here comes the fun!
+
 old_cubes <- make_cube( dd$x1[1], dd$x2[1], dd$y1[1], dd$y2[1], dd$z1[1], dd$z2[1] )
 for(i in 1:nrow(dd)) {
   new_cube <- make_cube(dd$x1[i], dd$x2[i], dd$y1[i], dd$y2[i], dd$z1[i], dd$z2[i])
-  new_cube
   if(dd$status[i] == "on") {
-    x <- 1
     for(x in 1:nrow(old_cubes)) {
       cube_x <- c(old_cubes$x1[x], old_cubes$x2[x], old_cubes$y1[x], old_cubes$y2[x], old_cubes$z1[x], old_cubes$z2[x])
       cube_x
@@ -149,11 +149,7 @@ for(i in 1:nrow(dd)) {
         new_cube_j <- c(new_cube$x1[j], new_cube$x2[j], new_cube$y1[j], new_cube$y2[j], new_cube$z1[j], new_cube$z2[j])
         bind_rows(cubeint(new_cube_j, cube_x), cubediff(new_cube_j, cube_x))
       }) 
-      new_cube
-      
     }
-    #new_cube
-    new_cube
     re <- integer(0)
     for(j in 1:nrow(new_cube)) {
       if(any_subsets(old_cubes, new_cube[j,])) {
@@ -165,7 +161,6 @@ for(i in 1:nrow(dd)) {
     }
     old_cubes <- bind_rows(old_cubes, new_cube)
   } else { #status == "off"
-    j <- 1
     new_cube_vec <- c(new_cube$x1[1], new_cube$x2[1], new_cube$y1[1], new_cube$y2[1], new_cube$z1[1], new_cube$z2[1])
     old_cubes <- purrr::map_df(1:nrow(old_cubes), function(j) {
       old_cube_j <- c(old_cubes$x1[j], old_cubes$x2[j], old_cubes$y1[j], old_cubes$y2[j], old_cubes$z1[j], old_cubes$z2[j])
