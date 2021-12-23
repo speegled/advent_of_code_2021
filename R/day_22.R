@@ -144,7 +144,6 @@ for(i in 1:nrow(dd)) {
   if(dd$status[i] == "on") {
     for(x in 1:nrow(old_cubes)) {
       cube_x <- c(old_cubes$x1[x], old_cubes$x2[x], old_cubes$y1[x], old_cubes$y2[x], old_cubes$z1[x], old_cubes$z2[x])
-      cube_x
       new_cube <- purrr::map_df(1:nrow(new_cube), function(j) {
         new_cube_j <- c(new_cube$x1[j], new_cube$x2[j], new_cube$y1[j], new_cube$y2[j], new_cube$z1[j], new_cube$z2[j])
         bind_rows(cubeint(new_cube_j, cube_x), cubediff(new_cube_j, cube_x))
