@@ -12,7 +12,7 @@ aaa <- data.frame(Var1 = integer(0),
                  Var2 = integer(0),
                  Var3 = integer(0))
 i <- 1
-for(i in 1:nrow(dd)) {
+for(i in 1:20) {
   if(dd$status[i] == "on") {
     aaa <- union(aaa, expand.grid(dd$x1[i]:dd$x2[i], dd$y1[i]:dd$y2[i], dd$z1[i]:dd$z2[i]))
   } else {
